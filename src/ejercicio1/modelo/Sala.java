@@ -1,50 +1,41 @@
 package ejercicio1.modelo;
 
+import java.util.HashMap;
+
 public class Sala {
-    private boolean[][] asientos; // true = ocupado, false = libre
+    private int capacidad;
+    private boolean[] asientos;
+    private HashMap<Integer, String[]> reservas; // [ID del usuario, [nombre, asiento]]
 
-    public Sala(int filas, int columnas) {
-        asientos = new boolean[filas][columnas]; // Inicialmente todos los asientos están libres (false)
+    // Constructor
+    public Sala(int capacidad) {
+        this.capacidad = capacidad;
+        this.asientos = new boolean[capacidad]; // false = asiento libre
+        this.reservas = new HashMap<>();
     }
 
-    // Verifica si un asiento está libre
-    public boolean estaLibre(int fila, int columna) {
-        if (fila >= 0 && fila < asientos.length && columna >= 0 && columna < asientos[0].length) {
-            return !asientos[fila][columna]; // Devuelve true si está libre
+    // Reservar un asiento
+    public boolean reservarAsiento(int idUsuario, String nombre, int numeroAsiento) {
+        if (numeroAsiento >= 0 && numeroAsiento < capacidad && !asientos[numeroAsiento]) {
+            asientos[numeroAsiento] = true; // Marcar asiento como ocupado
+            reservas.put(idUsuario, new String[]{nombre, String.valueOf(numeroAsiento)});
+            return true; // Reserva exitosa
         }
-        return false; // Si está fuera de rango, no está libre
+        return false; // Asiento no disponible o inválido
     }
 
-    // Reserva un asiento
-    public void reservarAsiento(int fila, int columna) {
-        if (estaLibre(fila, columna)) {
-            asientos[fila][columna] = true; // Marca el asiento como ocupado
-            System.out.println("¡Asiento reservado con éxito!");
-        } else {
-            System.out.println("El asiento no está disponible o no existe.");
-        }
-    }
-
-    // Muestra el estado de los asientos
-    public void mostrarAsientos() {
-        System.out.println("Estado de los asientos:");
-        for (int i = 0; i < asientos.length; i++) {
-            for (int j = 0; j < asientos[i].length; j++) {
-                System.out.print(asientos[i][j] ? "[X] " : "[ ] "); // [X] = ocupado, [ ] = libre
-            }
-            System.out.println();
-        }
-    }
-
-    // Verifica si hay asientos libres
-    public boolean hayAsientosLibres() {
-        for (int i = 0; i < asientos.length; i++) {
-            for (int j = 0; j < asientos[i].length; j++) {
-                if (!asientos[i][j]) {
-                    return true; // Hay al menos un asiento libre
-                }
+    // Verificar si hay asientos disponibles
+    public boolean hayAsientosDisponibles() {
+        for (boolean asiento : asientos) {
+            if (!asiento) {
+                return true; // Hay al menos un asiento libre
             }
         }
         return false; // No hay asientos libres
+    }
+
+    // Obtener las reservas
+    public HashMap<Integer, String[]> getReservas() {
+        return reservas;
     }
 }
